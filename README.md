@@ -1,1 +1,4 @@
-# jwt-auth-flask-react
+# JWT Authentication
+- Python
+- Flask
+- ReactJS
