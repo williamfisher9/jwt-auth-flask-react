@@ -1,0 +1,7 @@
+{
+  "SECRET_KEY": "ashkjfh21hekh12h4jk21h3jk21h3jh213wqsdacyizxo",
+  "JWT_SECRET_KEY": "kewyiuvalkb7983284rfjkvnmnzviuoyewqrewkjsdafhvcx3298461",
+  "SQLALCHEMY_DATABASE_URI": "sqlite:///database.db",
+  "SQLALCHEMY_TRACK_MODIFICATIONS": false,
+  "DEBUG": true
+}
