@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from ..models.user import User
+from ..response.response_message import ResponseMessage
 from ..views.user_views import create_user
 from ..extensions.extensions import db
 
@@ -9,17 +10,16 @@ user_blueprint = Blueprint("user_blueprint", __name__)
 def users_get_post_handler():
     if request.method == 'GET':
         users = User.query.all()
-        return {"users": [user.to_dict() for user in users]}
+
+        response_message = ResponseMessage(users, 200)
+        return {"response": response_message.create_response()}
 
     if request.method == 'POST':
         user_json = request.get_json()
-        user = User()
-        user.username = user_json['username']
-        user.first_name = user_json['first_name']
-        user.last_name = user_json['last_name']
-        user.password = user_json['password']
+        user = User(user_json['username'], user_json['first_name'], user_json['last_name'], user_json['password'])
         create_user(user)
-        return {"response": "user created successfully"}
+        response_message = ResponseMessage(user, 200)
+        return {"response": response_message.create_response()}
 
 @user_blueprint.route("/api/v1/users/<id>", methods=['GET', 'DELETE', 'PATCH'])
 def user_get_by_id_handler(id):
@@ -27,26 +27,31 @@ def user_get_by_id_handler(id):
         user = User.query.filter_by(id=id).first()
 
         if not user:
-            return {"error": "user was not found!"}
+            response_message = ResponseMessage("user was not found!", 404)
+            return {"response": response_message.create_response()}
 
-        return {"user": user.to_dict()}
+        response_message = ResponseMessage(user, 200)
+        return {"response": response_message.create_response()}
 
     if request.method == 'DELETE':
         user = User.query.filter_by(id=id).first()
 
         if not user:
-            return {"error": "user was not found!"}
+            response_message = ResponseMessage("user was not found!", 404)
+            return {"response": response_message.create_response()}
 
         db.session.delete(user)
         db.session.commit()
 
-        return {"user": "user deleted successfully"}
+        response_message = ResponseMessage("user deleted successfully!", 200)
+        return {"response": response_message.create_response()}
 
     if request.method == 'PATCH':
         user = User.query.filter_by(id=id).first()
 
         if not user:
-            return {"error": "user was not found"}
+            response_message = ResponseMessage("user was not found!", 404)
+            return {"response": response_message.create_response()}
 
         for attr in request.get_json():
             setattr(user, attr, request.get_json()[attr])
@@ -54,4 +59,5 @@ def user_get_by_id_handler(id):
         db.session.add(user)
         db.session.commit()
 
-        return {"user": user.to_dict()}
+        response_message = ResponseMessage(user, 200)
+        return {"response": response_message.create_response()}
