@@ -1,8 +1,8 @@
 import datetime
 import json
 
-from src.extensions.extensions import db, bcrypt
-from src.models.user import User
+from ..extensions.extensions import db, bcrypt
+from ..models.user import User
 from flask_jwt_extended import create_access_token
 from sqlalchemy.exc import IntegrityError
 

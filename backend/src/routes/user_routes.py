@@ -1,10 +1,11 @@
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 
-from ..models.user import User
-from ..messages.response_message import ResponseMessage
-from ..views.user_views import create_user, validate_user_login
-from ..extensions.extensions import db, bcrypt
+
+from src.messages.response_message import ResponseMessage
+from src.views.user_views import create_user, validate_user_login
+from src.extensions.extensions import db, bcrypt
+from src.models.user import User
 
 user_blueprint = Blueprint("user_blueprint", __name__)
 
