@@ -9,6 +9,6 @@
 body {
   width: 100svw;
   height: 100svh;
-  background-color: #1a1a1a;
+  background: url("./assets/background.jpg") center/cover no-repeat;
   font-family: 'Poppins', sans-serif;
 }

@@ -1,0 +1,92 @@
+.login-main-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container {
+    width: 500px;
+    border: 3px solid #000;
+    border-radius: 10px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    padding: 40px 0;
+    gap: 40px;
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.field-group{
+    width: 400px;
+    height: 55px;
+    border: 2px solid #000;
+    border-radius: 5px;
+    position: relative;
+}
+
+.form-field {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    color: #000;
+    border: none;
+    outline: none;
+    font-size: 1.2rem;
+    padding-left: 45px;
+}
+
+.form-field::placeholder {
+    color: #000;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+.form-field:focus::placeholder {
+    color: transparent;
+}
+
+.form-field-error {
+    position: absolute;
+    bottom: -25px;
+    left: 10px;
+    color: red;
+    font-size: 12px;
+}
+
+.field-submit-btn {
+    padding: 5px 30px;
+    border: 2px solid #000;
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-size: 1.3rem;
+    color: #000;
+    text-align: center;
+    align-content: center;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.field-submit-btn:hover {
+    background-color: #000;
+    color: #fff;
+}
+
+.field-icon {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    color: #000;
+    font-size: 1.3rem;
+    transform: translate(-50%, -50%);
+}
+
+#logo {
+    width: 200px;
+}
