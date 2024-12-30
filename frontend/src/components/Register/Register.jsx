@@ -4,6 +4,8 @@ import { useState } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 
+import loadingIcon from '../../assets/loading-icon.gif'
+
 export default function Register() {
     const navigate = useNavigate();
 
@@ -14,6 +16,8 @@ export default function Register() {
         password: {value: '', error: '', hasError:false },
         formError: {value: '', error: '', hasError:false }
     })
+
+    const [isLoading, setIsLoading] = useState(false)
 
     const handleRegisterRequest = () => {
         let hasErrors = false;
@@ -43,6 +47,8 @@ export default function Register() {
         }
 
         if(!hasErrors) {
+            setIsLoading(true)
+
             axios.post("http://localhost:8080/api/v1/users", {
                 "username": formFieldsValues.emailAddress.value,
                 "first_name": formFieldsValues.firstName.value,
@@ -53,10 +59,10 @@ export default function Register() {
                 if(res.status == 200 || res.status == 201){
                     navigate('/login')
                 }
+
+                setIsLoading(false)
             }).catch(err => {
                 if(err.status == 409){
-                    setFormFieldsValues({...formFieldsValues, formError: {value: '', hasError: true, error: 'Username exists in the system'}})
-
                     setFormFieldsValues({
                         emailAddress: {...formFieldsValues.emailAddress, hasError: false, error: ''},
                         firstName: {...formFieldsValues.firstName, hasError: false, error: ''},
@@ -64,6 +70,8 @@ export default function Register() {
                         password: {...formFieldsValues.password, hasError: false, error: ''},
                         formError: {value: '', hasError: true, error: 'Username exists in the system'},
                     })
+
+                    setIsLoading(false)
 
                 }
             })
@@ -94,6 +102,12 @@ export default function Register() {
     }
 
     return <div className="register-main-container">
+        {isLoading ? 
+            <div className='loading-icon-container'>
+                <img src={loadingIcon} />
+            </div>
+        : null}
+
         <div className="register-container">
             <div className='auth-logo'>
                             <img src={logo} id='logo' />
