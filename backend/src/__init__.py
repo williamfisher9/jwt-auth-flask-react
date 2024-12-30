@@ -1,6 +1,6 @@
 from flask import Flask
 import json
-from src.extensions.extensions import db, jwt, bcrypt
+from src.extensions.extensions import db, jwt, bcrypt, cors
 from src.routes.user_routes import user_blueprint
 import src.configs.logging_config as logging_config
 
@@ -13,6 +13,7 @@ app.config.from_file("configs\\app-configs.json", load=json.load)
 db.init_app(app)
 bcrypt.init_app(app)
 jwt.init_app(app)
+cors.init_app(app)
 
 with app.app_context():
     db.create_all()

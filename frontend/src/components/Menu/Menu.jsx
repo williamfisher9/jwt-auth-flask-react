@@ -13,7 +13,7 @@ function Menu(){
 
         <div className='menu-items-container'>
             <Link className='menu-item' to='/login'>
-                <i className="icon fa-solid fa-right-to-bracket fa-fw"></i>
+                <i className="icon fa-solid fa-arrow-right-to-bracket fa-fw"></i>
                 <p className='icon-desc'>login</p>
             </Link>
 
