@@ -23,3 +23,9 @@ class ResponseMessage():
                 "message": [item.to_dict() for item in self.message],
                 "status": self.status
             }
+
+        if isinstance(self.message, dict):
+            return {
+                "message": self.message,
+                "status": self.status
+            }

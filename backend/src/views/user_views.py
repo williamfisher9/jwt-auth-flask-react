@@ -43,4 +43,4 @@ def validate_user_login(username, password):
     token = create_access_token(identity=str({"id": user.id, "username": user.username}),
                                 expires_delta=datetime.timedelta(milliseconds=jwt_expiration_milliseconds))
 
-    return token, 200
+    return {"token": token, "user_id": user.id, "username": user.username, "roles": [role.name for role in user.role]}, 200

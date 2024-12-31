@@ -51,8 +51,18 @@ def handle_user_get_delete_update_by_id(id):
             response_message = ResponseMessage("user was not found!", 404)
             return {"response": response_message.create_response()}
 
-        response_message = ResponseMessage(user, 200)
-        return {"response": response_message.create_response()}
+        is_user_admin = False
+
+        if "ADMIN" in [role.name for role in user.role]:
+            is_user_admin = True
+
+        if not is_user_admin:
+            response_message = ResponseMessage(user, 200)
+            return {"response": response_message.create_response()}
+        else:
+            users = User.query.all()
+            response_message = ResponseMessage(users, 200)
+            return {"response": response_message.create_response()}
 
     if request.method == 'DELETE':
         user = User.query.filter_by(id=id).first()

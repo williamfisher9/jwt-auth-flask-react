@@ -5,6 +5,8 @@ import logoText from '../../assets/logo_text.png'
 import { Link } from 'react-router'
 
 function Menu(){
+    
+
     return <div className="menu-container">
         <Link className='logo-container' to={'/'}>
             <img src={logoImage} id='logo-image' />
