@@ -51,8 +51,8 @@ function Login() {
             })
             .then(res => {
                 if(res.status == 200 || res.status == 201){
-                    console.log(res.data.response)
                     window.localStorage.setItem('token', res.data.response.message)
+                    navigate('/user/10')
                 }
 
                 setIsLoading(false)

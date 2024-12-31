@@ -1,5 +1,5 @@
 from flask_login import UserMixin
-from sqlalchemy.orm import Mapped, mapped_column
+# from sqlalchemy.orm import Mapped, mapped_column
 
 from ..extensions.extensions import db
 
@@ -19,6 +19,7 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(20), nullable=False)
     last_name = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(100), nullable=False)
+    role = db.relationship('Role', secondary = 'user_roles', back_populates = 'user')
 
     def __init__(self, username: str, password: str, first_name: str, last_name: str):
         self.username = username

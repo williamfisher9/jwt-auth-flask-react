@@ -3,6 +3,7 @@ import json
 from src.extensions.extensions import db, jwt, bcrypt, cors
 from src.routes.user_routes import user_blueprint
 import src.configs.logging_config as logging_config
+from src.models.role import Role
 
 logging_config.initialize_logger()
 
@@ -17,6 +18,13 @@ cors.init_app(app)
 
 with app.app_context():
     db.create_all()
+    roles = Role.query.all()
+    if len(roles) == 0:
+        admin_role = Role(name="ADMIN")
+        user_role = Role(name="USER")
+        db.session.add_all([admin_role, user_role])
+        db.session.commit()
+
 
 app.register_blueprint(user_blueprint)
 

@@ -3,11 +3,26 @@ import json
 
 from ..extensions.extensions import db, bcrypt
 from ..models.user import User
+from ..models.role import Role
 from flask_jwt_extended import create_access_token
 from sqlalchemy.exc import IntegrityError
 
 def create_user(user):
     try:
+        admin_role = Role.query.filter_by(name="ADMIN").first()
+        user_role = Role.query.filter_by(name="USER").first()
+
+        if not admin_role:
+            admin_role = Role(name="ADMIN")
+            db.session.add(admin_role)
+
+        if not user_role:
+            user_role = Role(name="USER")
+            db.session.add(user_role)
+
+        user.role.append(admin_role)
+        user.role.append(user_role)
+
         db.session.add(user)
         db.session.commit()
     except IntegrityError as exc:
