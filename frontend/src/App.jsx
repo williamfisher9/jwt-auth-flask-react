@@ -12,7 +12,7 @@ function App() {
         <Route element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/logout" handle={window.localStorage.clear()} element={<Login />} />
+          <Route path="/logout" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/user/:id" element={<UserHome />} />
         </Route>
