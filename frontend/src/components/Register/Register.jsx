@@ -26,7 +26,6 @@ export default function Register() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if(!emailRegex.test(formFieldsValues.emailAddress.value) || formFieldsValues.emailAddress.value == ''){
-            console.log("invalid email address format")
             hasErrors = true;
             errors = {...errors, emailAddress: 'Invalid email address format'};
         }

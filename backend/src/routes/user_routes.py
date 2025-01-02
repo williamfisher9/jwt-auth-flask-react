@@ -1,13 +1,27 @@
 from flask import Blueprint, request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
-
+from src.models.menu_items import MenuItem
 from src.messages.response_message import ResponseMessage
 from src.views.user_views import create_user, validate_user_login
 from src.extensions.extensions import db, bcrypt
 from src.models.user import User
 
 user_blueprint = Blueprint("user_blueprint", __name__)
+menu_blueprint = Blueprint("menu_blueprint", __name__)
+
+@menu_blueprint.route("/api/v1/menu-items", methods=['GET'])
+@jwt_required(optional=True)
+def get_menu_items():
+    current_identity = get_jwt_identity()
+    if current_identity:
+        menu_items = MenuItem.query.filter_by(role_name="user").all()
+        response_message = ResponseMessage(menu_items, 200).create_response()
+        return response_message["message"], response_message["status"]
+    else:
+        menu_items = MenuItem.query.filter_by(role_name="public").all()
+        response_message = ResponseMessage(menu_items, 200).create_response()
+        return response_message["message"], response_message["status"]
 
 @user_blueprint.route("/api/v1/users", methods=['POST'])
 def add_new_user():

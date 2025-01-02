@@ -7,7 +7,6 @@ import axios from 'axios'
 import { useNavigate } from 'react-router'
 
 function Login() {
-
     const navigate = useNavigate()
 
     const [formFieldsObj, setFormFieldsObj] = useState({
@@ -51,14 +50,12 @@ function Login() {
             })
             .then(res => {
                 if(res.status == 200 || res.status == 201){
-                    console.log(res.data)
                     window.localStorage.setItem('token', res.data.response.message.token)
                     navigate(`/user/${res.data.response.message.user_id}`)
                 }
 
                 setIsLoading(false)
             }).catch(err => {
-                console.log(err.response.data.response)
                 if(err.status == 401 || err.status == 403){
                     setFormFieldsObj({
                         username: {...formFieldsObj.username, hasError: false, error: ''},
