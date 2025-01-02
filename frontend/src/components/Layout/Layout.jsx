@@ -11,12 +11,13 @@ function Layout() {
   const [menuItems, setMenuItems] = useState([]);
 
   useEffect(() => {
-    console.log("running use effect")
+    console.log(`building the layout for the path ${location.pathname}`)
     if ((location.pathname == "/login", location.pathname == "/logout")) {
-      console.log("clearing local storage...");
-      console.log(location.pathname);
+      console.log(`path is ${location.pathname} - clearing local storage...`);
       window.localStorage.clear();
     }
+
+    console.log(`building menu items for path ${location.pathname}`)
 
     axios.get("http://localhost:8080/api/v1/menu-items", window.localStorage.getItem("token") ? {headers: {"Authorization": `Bearer ${window.localStorage.getItem("token")}`}} : null)
         .then(res => {
