@@ -21,7 +21,6 @@ function Layout() {
 
     axios.get("http://localhost:8080/api/v1/menu-items", window.localStorage.getItem("token") ? {headers: {"Authorization": `Bearer ${window.localStorage.getItem("token")}`}} : null)
         .then(res => {
-            console.log(res.data)
             setMenuItems(res.data)
         })
         .catch(err => {
