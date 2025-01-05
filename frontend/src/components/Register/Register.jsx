@@ -1,13 +1,17 @@
 import './Register.css'
 import logo from '../../assets/logo_full.png'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 import loadingIcon from '../../assets/loading-icon.gif'
 
 export default function Register() {
     const navigate = useNavigate();
+
+    useEffect(() => {
+            window.localStorage.clear()
+        }, [])
 
     const [formFieldsValues, setFormFieldsValues] = useState({
         emailAddress: {value: '', error: '', hasError:false }, 
@@ -107,31 +111,31 @@ export default function Register() {
             </div>
         : null}
 
-        <div className="register-container">
+        <form className="register-container">
             <div className='auth-logo'>
-                            <img src={logo} id='logo' />
+                            <img src={logo} id='logo' /><span style={{fontSize: "2.2rem", color: "RGB(221, 195, 126)", fontWeight: "600"}}>| REGISTER</span>
                         </div>
 
             <div className='field-group'>
-                <input className='form-field' type='text' id='emailAddress' name='emailAddress' autoComplete='off' placeholder='email address' onChange={handleFieldChange}/>
+                <input className='form-field' type='text' id='emailAddress' name='emailAddress' autoComplete='off' placeholder='email address' onChange={handleFieldChange} onKeyDown={(e) => {if (e.key === "Enter") handleRegisterRequest();}} />
                 <i className="field-icon fa-solid fa-envelope fa-fw"></i>
                 <label className='form-field-error' htmlFor='emailAddress'>{formFieldsValues.emailAddress.hasError ? formFieldsValues.emailAddress.error : ''}</label>
             </div>
 
             <div className='field-group'>
-                <input className='form-field' type='text' id='firstName' name='firstName' autoComplete='off' placeholder='first name' onChange={handleFieldChange}/>
+                <input className='form-field' type='text' id='firstName' name='firstName' autoComplete='off' placeholder='first name' onChange={handleFieldChange} onKeyDown={(e) => {if (e.key === "Enter") handleRegisterRequest();}} />
                 <i className="field-icon fa-solid fa-user fa-fw"></i>
                 <label className='form-field-error' htmlFor='firstName'>{formFieldsValues.firstName.hasError ? formFieldsValues.firstName.error : ''}</label>
             </div>
 
             <div className='field-group'>
-                <input className='form-field' type='text' id='lastName' name='lastName' autoComplete='off' placeholder='last name' onChange={handleFieldChange}/>
+                <input className='form-field' type='text' id='lastName' name='lastName' autoComplete='off' placeholder='last name' onChange={handleFieldChange} onKeyDown={(e) => {if (e.key === "Enter") handleRegisterRequest();}} />
                 <i className="field-icon fa-solid fa-user fa-fw"></i>
                 <label className='form-field-error' htmlFor='lastName'>{formFieldsValues.lastName.hasError ? formFieldsValues.lastName.error : ''}</label>
             </div>
 
             <div className='field-group'>
-                <input className='form-field' type='password' id='password' name='password' placeholder='password' onChange={handleFieldChange}/>
+                <input className='form-field' type='password' id='password' name='password' autoComplete='off' placeholder='password' onChange={handleFieldChange} onKeyDown={(e) => {if (e.key === "Enter") handleRegisterRequest();}} />
                 <i className="field-icon fa-solid fa-lock fa-fw"></i>
                 <label className='form-field-error' htmlFor='password'>{formFieldsValues.password.hasError ? formFieldsValues.password.error : ''}</label>
             </div>
@@ -140,7 +144,9 @@ export default function Register() {
                 register
             </div>
 
+            <p>You have an account? <Link style={{color: "goldenrod", textDecoration: "underline"}} to='/login'>Login</Link></p>
+
             <p className='form-error'>{formFieldsValues.formError.hasError ? formFieldsValues.formError.error : ''}</p>
-        </div>
+        </form>
     </div>
 }

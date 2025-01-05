@@ -1,5 +1,6 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, flash
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from werkzeug.utils import secure_filename
 
 from src.models.menu_items import MenuItem
 from src.messages.response_message import ResponseMessage
@@ -7,8 +8,14 @@ from src.views.user_views import create_user, validate_user_login
 from src.extensions.extensions import db, bcrypt
 from src.models.user import User
 
+import os
+
 user_blueprint = Blueprint("user_blueprint", __name__)
 menu_blueprint = Blueprint("menu_blueprint", __name__)
+
+def allowed_file(filename):
+    ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @menu_blueprint.route("/api/v1/menu-items", methods=['GET'])
 @jwt_required(optional=True)
@@ -22,6 +29,26 @@ def get_menu_items():
         menu_items = MenuItem.query.filter_by(role_name="public").all()
         response_message = ResponseMessage(menu_items, 200).create_response()
         return response_message["message"], response_message["status"]
+
+
+
+@user_blueprint.route("/api/v1/users/<id>/profile-img", methods=['POST'])
+def upload_user_profile_img(id):
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return {"response": "No file part"}, 404
+        file = request.files['file']
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            flash('No selected file')
+            return {"response": "No selected file'"}, 404
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join("C://Users//william.fisher//Desktop//sqlite-db//images", filename))
+            return {"response": "file uploaded successfully"}, 200
 
 @user_blueprint.route("/api/v1/users", methods=['POST'])
 def add_new_user():
@@ -92,8 +119,18 @@ def handle_user_get_delete_update_by_id(id):
             response_message = ResponseMessage(exc.__repr__(), 417)
             return {"response": response_message.create_response()}
 
-        response_message = ResponseMessage("user deleted successfully!", 200)
-        return {"response": response_message.create_response()}
+        is_user_admin = False
+
+        if "ADMIN" in [role.name for role in user.role]:
+            is_user_admin = True
+
+        if not is_user_admin:
+            response_message = ResponseMessage(user, 200)
+            return {"response": response_message.create_response()}
+        else:
+            users = User.query.all()
+            response_message = ResponseMessage(users, 200)
+            return {"response": response_message.create_response()}
 
     if request.method == 'PATCH':
         user = User.query.filter_by(id=id).first()

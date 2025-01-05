@@ -1,13 +1,17 @@
 
 import './Login.css'
 import logo from '../../assets/logo_full.png'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import loadingIcon from '../../assets/loading-icon.gif'
 import axios from 'axios'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 
 function Login() {
     const navigate = useNavigate()
+
+    useEffect(() => {
+        window.localStorage.clear()
+    }, [])
 
     const [formFieldsObj, setFormFieldsObj] = useState({
         username: {value: '', hasError: false, error: ''}, 
@@ -51,6 +55,7 @@ function Login() {
             .then(res => {
                 if(res.status == 200 || res.status == 201){
                     window.localStorage.setItem('token', res.data.response.message.token)
+                    window.localStorage.setItem('user_id', res.data.response.message.user_id)
                     navigate(`/user/${res.data.response.message.user_id}`)
                 }
 
@@ -88,29 +93,32 @@ function Login() {
                     </div>
                 : null}
 
-        <div className="login-container">
+        <form className="login-container">
             <div className='auth-logo'>
-                <img src={logo} id='logo' />
+                <img src={logo} id='logo'/><span style={{fontSize: "2.2rem", color: "RGB(221, 195, 126)", fontWeight: "600"}}>| LOGIN</span>
             </div>
 
             <div className='field-group'>
-                <input className='form-field' type='text' id='username' name='username' autoComplete='off' placeholder='username' onChange={handleFormChange}/>
+                <input className='form-field' type='text' id='username' name='username' autoComplete='off' placeholder='username' onChange={handleFormChange} onKeyDown={(e) => {if (e.key === "Enter") handleLoginRequest();}} />
                 <i className="field-icon fa-solid fa-envelope fa-fw"></i>
                 <label className='form-field-error' htmlFor='username'>{formFieldsObj.username.hasError ? formFieldsObj.username.error : ''}</label>
             </div>
 
             <div className='field-group'>
-                <input className='form-field' type='password' id='password' name='password' placeholder='password' onChange={handleFormChange}/>
+                <input className='form-field' type='password' id='password' name='password' autoComplete='off' placeholder='password' onChange={handleFormChange} onKeyDown={(e) => {if (e.key === "Enter") handleLoginRequest();}} />
                 <i className="field-icon fa-solid fa-lock fa-fw"></i>
                 <label className='form-field-error' htmlFor='password'>{formFieldsObj.password.hasError ? formFieldsObj.password.error : ''}</label>
             </div>
 
+           
             <div className='field-submit-btn' onClick={handleLoginRequest}>
                 login
             </div>
 
+            <p>Don't have an account? <Link style={{color: "goldenrod", textDecoration: "underline"}} to='/register'>Sign up</Link></p>
+
             <p className='form-error'>{formFieldsObj.formError.hasError ? formFieldsObj.formError.error : ''}</p>
-        </div>
+        </form>
     </div>
 }
 

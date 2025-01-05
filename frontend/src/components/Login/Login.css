@@ -102,3 +102,8 @@
     z-index: 999;
     backdrop-filter: blur(10px);
 }
+
+.auth-logo {
+    display: flex;
+    gap: 10px;
+}
