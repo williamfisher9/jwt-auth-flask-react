@@ -9,7 +9,7 @@ from src.extensions.extensions import db, bcrypt
 from src.models.user import User
 
 import os
-
+import uuid
 user_blueprint = Blueprint("user_blueprint", __name__)
 menu_blueprint = Blueprint("menu_blueprint", __name__)
 
@@ -32,10 +32,17 @@ def get_menu_items():
 
 
 
-@user_blueprint.route("/api/v1/users/<id>/profile-img", methods=['POST'])
-def upload_user_profile_img(id):
+@user_blueprint.route("/api/v1/users/profile-img", methods=['POST'])
+@jwt_required()
+def upload_user_profile_img():
     if request.method == 'POST':
         # check if the post request has the file part
+
+        user = User.query.filter_by(id=request.values['user_id']).first()
+
+        if not user:
+            return {"response": "User was not found"}, 404
+
         if 'file' not in request.files:
             flash('No file part')
             return {"response": "No file part"}, 404
@@ -47,7 +54,7 @@ def upload_user_profile_img(id):
             return {"response": "No selected file'"}, 404
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join("C://Users//william.fisher//Desktop//sqlite-db//images", filename))
+            file.save(os.path.join("C://Users//william.fisher//Desktop//sqlite-db//images", str(uuid.uuid4()) + "." + filename.rsplit('.', 1)[1].lower() ))
             return {"response": "file uploaded successfully"}, 200
 
 @user_blueprint.route("/api/v1/users", methods=['POST'])

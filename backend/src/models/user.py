@@ -1,3 +1,5 @@
+from enum import unique
+
 from flask_login import UserMixin
 # from sqlalchemy.orm import Mapped, mapped_column
 
@@ -19,6 +21,7 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(20), nullable=False)
     last_name = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(100), nullable=False)
+    profile_img_url = db.Column(db.String, nullable=True, unique=True)
     role = db.relationship('Role', secondary = 'user_roles', back_populates = 'user')
 
     def __init__(self, username: str, password: str, first_name: str, last_name: str):
@@ -28,12 +31,13 @@ class User(db.Model, UserMixin):
         self.last_name = last_name
 
     def __repr__(self):
-        return f'<User {self.id} {self.username} {self.first_name} {self.last_name} {self.password}>'
+        return f'<User {self.id} {self.username} {self.first_name} {self.last_name}>'
 
     def to_dict(self):
         return {
             "id": self.id,
             "username": self.username,
             "first_name": self.first_name,
-            "last_name": self.last_name
+            "last_name": self.last_name,
+            "profile_img_url": self.profile_img_url
         }

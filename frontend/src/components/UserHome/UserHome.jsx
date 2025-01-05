@@ -9,6 +9,7 @@ function UserHome(){
 
     const [users, setUsers] = useState([]);
     const [showImageUploader, setShowImageUploader] = useState(false)
+    const [selectedFile, setselectedFile] = useState([])
     
     useEffect(() => {
         axios.get(`http://localhost:8080/api/v1/users/${params.id}`,  window.localStorage.getItem('token') ? { headers: {'Authorization': `Bearer ${window.localStorage.getItem('token')}`}} : null)
@@ -38,10 +39,6 @@ function UserHome(){
         window.localStorage.getItem("user_id") == id ? setShowImageUploader(true) : setShowImageUploader(false)
     }
 
-
-
-    const [selectedFile, setselectedFile] = useState([])
-
     const handleFileChange = (e) => {
         const selectedFileList = [];
         for (let i = 0; i < e.target.files.length; i++) {
@@ -51,13 +48,11 @@ function UserHome(){
       };
     
       // Upload file to server
-      const handleUploadFile = async (ev) => {
-        ev.preventDefault();
+      const handleFileUpload = async (id) => {
+        // when not a frm no need for this
+        //ev.preventDefault();
     
         const data = new FormData();
-
-
-            console.log(selectedFile[0])
 
         // Append the file to the request body
         //for (let i = 0; i < selectedFile.files.length; i++) {
@@ -65,11 +60,12 @@ function UserHome(){
         //}
     
         data.append("file", selectedFile[0], selectedFile[0].name);
+        data.append("user_id", id);
 
         try {
           
           const response = await axios.post(
-            "http://localhost:8080/api/v1/users/3/profile-img",
+            "http://localhost:8080/api/v1/users/profile-img",
             data, window.localStorage.getItem('token') ? { headers: {'Authorization': `Bearer ${window.localStorage.getItem('token')}`}} : null
           );
           const body = response.data;
@@ -96,10 +92,10 @@ function UserHome(){
         {
             showImageUploader ? 
                 <div className="profile-img-uploader-container">
-                    <form className="profile-img-uploader" encType="multipart/form-data">
+                    <div className="profile-img-uploader">
                         <input type="file" id="profileImg" name="profileImg" accept="image/png, image/jpeg" onChange={handleFileChange}></input>
-                        <input type="button" id="closeAndSubmit" name="closeAndSubmit" value="UPLOAD" onClick={handleUploadFile}/>
-                    </form>
+                        <input type="button" id="closeAndSubmit" name="closeAndSubmit" value="UPLOAD" onClick={() => handleFileUpload(window.localStorage.getItem('user_id'))}/>
+                    </div>
                 </div>
             : null
         }
