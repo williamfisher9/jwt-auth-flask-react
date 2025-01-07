@@ -56,7 +56,7 @@ function Login() {
                 if(res.status == 200 || res.status == 201){
                     window.localStorage.setItem('token', res.data.response.message.token)
                     window.localStorage.setItem('user_id', res.data.response.message.user_id)
-                    navigate(`/user/${res.data.response.message.user_id}`)
+                    navigate(`/user/${res.data.response.message.user_id}/home`)
                 }
 
                 setIsLoading(false)

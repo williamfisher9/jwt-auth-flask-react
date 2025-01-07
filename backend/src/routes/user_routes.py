@@ -20,7 +20,8 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def get_profile_img_link(filename):
-    return url_for("user_blueprint.get_profile_img", _external=True, filename=filename)
+    if filename:
+        return url_for("user_blueprint.get_profile_img", _external=True, filename=filename)
 
 @user_blueprint.route('/api/v1/users/get-profile-img/<filename>')
 def get_profile_img(filename):
@@ -92,11 +93,21 @@ def add_new_user():
         response_message = ResponseMessage(result[0], result[1])
         return {"response": response_message.create_response()}, result[1]
 
+@user_blueprint.route("/api/v1/user/<id>/home", methods=['GET'])
+def get_user_details(id):
+    user = User.query.filter_by(id=id).first()
+
+    if not user:
+        response_message = ResponseMessage("user was not found!", 404)
+        return {"response": response_message.create_response()}
+
+    user.profile_img_url = get_profile_img_link(user.profile_img_url)
+    response_message = ResponseMessage(user, 200)
+    return {"response": response_message.create_response()}
+
 @user_blueprint.route("/api/v1/users/login", methods=['POST'])
 def user_login_handler():
     if request.method == 'POST':
-        user_json = request.get_json()
-
         if not request.get_json()['username'] or not request.get_json()['password']:
             return ResponseMessage("invalid login request format", 403)
 
