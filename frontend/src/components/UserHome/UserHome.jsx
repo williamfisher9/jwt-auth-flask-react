@@ -23,61 +23,57 @@ function UserHome(){
         })
     }, [])
 
-    const deleteItem = (id) => {
-        axios.delete(`http://localhost:8080/api/v1/users/${id}`,  window.localStorage.getItem('token') ? { headers: {'Authorization': `Bearer ${window.localStorage.getItem('token')}`}} : null)
-        .then(res => {
-            setUsers(res.data.response.message)
-        })
-        .catch(err => {
-            if(err.status == 401 || err.status == 403){
-                navigate('/login')
-            }
-        })
-    }
-
-    const handleProfileImageUpload = (id) => {
-        window.localStorage.getItem("user_id") == id ? setShowImageUploader(true) : setShowImageUploader(false)
-    }
-
-    const handleFileChange = (e) => {
-        const selectedFileList = [];
-        for (let i = 0; i < e.target.files.length; i++) {
-          selectedFileList.push(e.target.files.item(i));
+  const deleteItem = (id) => {
+    axios.delete(`http://localhost:8080/api/v1/users/${id}`, window.localStorage.getItem('token') ? { headers: { 'Authorization': `Bearer ${window.localStorage.getItem('token')}` } } : null)
+      .then(res => {
+        setUsers(res.data.response.message)
+      })
+      .catch(err => {
+        if (err.status == 401 || err.status == 403) {
+          navigate('/login')
         }
-        setselectedFile(selectedFileList);
-      };
-    
-      // Upload file to server
-      const handleFileUpload = async (id) => {
-        // when not a frm no need for this
-        //ev.preventDefault();
-    
-        const data = new FormData();
+      })
+  }
 
-        // Append the file to the request body
-        //for (let i = 0; i < selectedFile.files.length; i++) {
-          //data.append("file", selectedFile.files[i], selectedFile.files[i].name);
-        //}
-    
-        data.append("file", selectedFile[0], selectedFile[0].name);
-        data.append("user_id", id);
+  const handleProfileImageUpload = (id) => {
+    window.localStorage.getItem("user_id") == id ? setShowImageUploader(true) : setShowImageUploader(false)
+  }
 
-        try {
-          
-          const response = await axios.post(
-            "http://localhost:8080/api/v1/users/profile-img",
-            data, window.localStorage.getItem('token') ? { headers: {'Authorization': `Bearer ${window.localStorage.getItem('token')}`}} : null
-          );
-          const body = response.data;
-          console.log(body);
-          if (response.status === 200) {
-            console.log("file uploaded successfully")
-          }
-        } catch (error) {
-          console.error(error);
-          console.log("file uploaded failed")
-        }
-      };
+  const handleFileChange = (e) => {
+    const selectedFileList = [];
+    for (let i = 0; i < e.target.files.length; i++) {
+      selectedFileList.push(e.target.files.item(i));
+    }
+    setselectedFile(selectedFileList);
+  };
+    
+  // Upload file to server
+  const handleFileUpload = async (id) => {
+    // no need to prevent default behavior when an html form is not used
+    // ev.preventDefault();
+
+    const data = new FormData();
+
+    // Append the file to the request body
+    //for (let i = 0; i < selectedFile.files.length; i++) {
+    //data.append("file", selectedFile.files[i], selectedFile.files[i].name);
+    //}
+
+    data.append("file", selectedFile[0], selectedFile[0].name);
+    data.append("user_id", id);
+
+    try {
+      const response = await axios.post("http://localhost:8080/api/v1/users/profile-img", data, window.localStorage.getItem('token') ? { headers: { 'Authorization': `Bearer ${window.localStorage.getItem('token')}` } } : null);
+      if (response.status === 200) {
+        console.log("file uploaded successfully")
+        setShowImageUploader(false)
+        setUsers(response.data.response.message)
+      }
+    } catch (error) {
+      console.error(error);
+      navigate("/login")
+    }
+  };
     
 
 
@@ -106,14 +102,9 @@ function UserHome(){
                 return (
                   <div className="card-container" key={item.id}>
                     <img
-                      src=""
+                      src={item.profile_img_url}
                       alt="profile-img"
-                      className={
-                        window.localStorage.getItem("user_id") == item.id
-                          ? "profile-img personal-profile-img"
-                          : "profile-img"
-                      }
-
+                      className={`profile-img ${window.localStorage.getItem("user_id") == item.id ? 'personal-profile-img' : ''}`}
                       onClick={() => handleProfileImageUpload(item.id)}
                     />
 

@@ -73,12 +73,11 @@
     height: 150px; 
     border: 1px solid goldenrod;
     outline: 2px solid transparent;
+    object-fit: cover;
+    
 }
 
 .personal-profile-img {
-    border-radius: 50%;
-    width: 150px;
-    height: 150px; 
     border: 1px solid goldenrod;
     outline: 2px solid transparent;
 }

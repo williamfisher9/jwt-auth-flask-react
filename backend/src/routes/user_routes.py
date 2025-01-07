@@ -1,5 +1,5 @@
-from flask import Blueprint, request, flash
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask import Blueprint, request, url_for, send_from_directory
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from werkzeug.utils import secure_filename
 
 from src.models.menu_items import MenuItem
@@ -10,12 +10,21 @@ from src.models.user import User
 
 import os
 import uuid
+
 user_blueprint = Blueprint("user_blueprint", __name__)
 menu_blueprint = Blueprint("menu_blueprint", __name__)
 
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
+
 def allowed_file(filename):
-    ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def get_profile_img_link(filename):
+    return url_for("user_blueprint.get_profile_img", _external=True, filename=filename)
+
+@user_blueprint.route('/api/v1/users/get-profile-img/<filename>')
+def get_profile_img(filename):
+   return send_from_directory("C://Users//william.fisher//Desktop//sqlite-db//images", filename, as_attachment=False)
 
 @menu_blueprint.route("/api/v1/menu-items", methods=['GET'])
 @jwt_required(optional=True)
@@ -30,32 +39,46 @@ def get_menu_items():
         response_message = ResponseMessage(menu_items, 200).create_response()
         return response_message["message"], response_message["status"]
 
-
-
 @user_blueprint.route("/api/v1/users/profile-img", methods=['POST'])
 @jwt_required()
 def upload_user_profile_img():
     if request.method == 'POST':
-        # check if the post request has the file part
-
         user = User.query.filter_by(id=request.values['user_id']).first()
 
         if not user:
             return {"response": "User was not found"}, 404
 
         if 'file' not in request.files:
-            flash('No file part')
             return {"response": "No file part"}, 404
+
         file = request.files['file']
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
+
         if file.filename == '':
-            flash('No selected file')
             return {"response": "No selected file'"}, 404
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join("C://Users//william.fisher//Desktop//sqlite-db//images", str(uuid.uuid4()) + "." + filename.rsplit('.', 1)[1].lower() ))
-            return {"response": "file uploaded successfully"}, 200
+            new_file_name = str(uuid.uuid4()) + "." + filename.rsplit('.', 1)[1].lower()
+            file.save(os.path.join("C://Users//william.fisher//Desktop//sqlite-db//images", new_file_name))
+
+            user.profile_img_url = new_file_name
+            db.session.add(user)
+            db.session.commit()
+
+            is_user_admin = False
+
+            if "ADMIN" in [role.name for role in user.role]:
+                is_user_admin = True
+
+            if not is_user_admin:
+                user.profile_img_url = get_profile_img_link(user.profile_img_url)
+                response_message = ResponseMessage(user, 200)
+                return {"response": response_message.create_response()}
+            else:
+                users = User.query.all()
+                for user in users:
+                    user.profile_img_url = get_profile_img_link(user.profile_img_url)
+                response_message = ResponseMessage(users, 200)
+                return {"response": response_message.create_response()}
 
 @user_blueprint.route("/api/v1/users", methods=['POST'])
 def add_new_user():
@@ -86,6 +109,8 @@ def user_login_handler():
 def get_all_users_handler():
     if request.method == 'GET':
         users = User.query.all()
+        for user in users:
+            user.profile_img_url = get_profile_img_link(user.profile_img_url)
         response_message = ResponseMessage(users, 200)
         return {"response": response_message.create_response()}
 
@@ -105,10 +130,13 @@ def handle_user_get_delete_update_by_id(id):
             is_user_admin = True
 
         if not is_user_admin:
+            user.profile_img_url = get_profile_img_link(user.profile_img_url)
             response_message = ResponseMessage(user, 200)
             return {"response": response_message.create_response()}
         else:
             users = User.query.all()
+            for user in users:
+                user.profile_img_url = get_profile_img_link(user.profile_img_url)
             response_message = ResponseMessage(users, 200)
             return {"response": response_message.create_response()}
 
@@ -132,10 +160,13 @@ def handle_user_get_delete_update_by_id(id):
             is_user_admin = True
 
         if not is_user_admin:
+            user.profile_img_url = get_profile_img_link(user.profile_img_url)
             response_message = ResponseMessage(user, 200)
             return {"response": response_message.create_response()}
         else:
             users = User.query.all()
+            for user in users:
+                user.profile_img_url = get_profile_img_link(user.profile_img_url)
             response_message = ResponseMessage(users, 200)
             return {"response": response_message.create_response()}
 
