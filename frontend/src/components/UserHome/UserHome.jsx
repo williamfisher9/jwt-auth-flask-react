@@ -10,6 +10,7 @@ function UserHome(){
     const [users, setUsers] = useState([]);
     const [showImageUploader, setShowImageUploader] = useState(false)
     const [selectedFile, setselectedFile] = useState([])
+    const [imagePreview, setImagePreview] = useState('')
     
     useEffect(() => {
         axios.get(`http://localhost:8080/api/v1/users/${params.id}`,  window.localStorage.getItem('token') ? { headers: {'Authorization': `Bearer ${window.localStorage.getItem('token')}`}} : null)
@@ -43,6 +44,7 @@ function UserHome(){
     const selectedFileList = [];
     for (let i = 0; i < e.target.files.length; i++) {
       selectedFileList.push(e.target.files.item(i));
+      setImagePreview(window.URL.createObjectURL(e.target.files.item(i)))
     }
     setselectedFile(selectedFileList);
   };
@@ -67,6 +69,7 @@ function UserHome(){
       if (response.status === 200) {
         console.log("file uploaded successfully")
         setShowImageUploader(false)
+        setImagePreview('')
         setUsers(response.data.response.message)
       }
     } catch (error) {
@@ -75,26 +78,24 @@ function UserHome(){
     }
   };
     
-
-
-
-
-
-
-
-
     return <div className="users-main-container">
 
-        {
-            showImageUploader ? 
-                <div className="profile-img-uploader-container">
-                    <div className="profile-img-uploader">
-                        <input type="file" id="profileImg" name="profileImg" accept="image/png, image/jpeg" onChange={handleFileChange}></input>
-                        <input type="button" id="closeAndSubmit" name="closeAndSubmit" value="UPLOAD" onClick={() => handleFileUpload(window.localStorage.getItem('user_id'))}/>
-                    </div>
-                </div>
-            : null
-        }
+      {
+        showImageUploader ?
+          <div className="profile-img-uploader-screen">
+            <div className="profile-image-uploader-container">
+              <div className="profile-img-uploader-buttons">
+                <input type="file" id="profileImg" name="profileImg" accept="image/png, image/jpeg" onChange={handleFileChange}></input>
+                <input type="button" className="closeAndSubmit" id="submitProfileImage" name="submitProfileImage" value="UPLOAD" onClick={() => handleFileUpload(window.localStorage.getItem('user_id'))} />
+                <input type="button" className="closeAndSubmit" id="closeProfileImageUploader" name="closeProfileImageUploader" value="CLOSE" onClick={() => { setImagePreview(''); setShowImageUploader(false); }} />
+              </div>
+              <div className="profile-image-uploaderpreview">
+                {imagePreview != '' ? <img src={imagePreview} alt="profile-img" className='profile-img' /> : null}
+              </div>
+            </div>
+          </div>
+          : null
+      }
 
         <div className="users-grid">
         {
